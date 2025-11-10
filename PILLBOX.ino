@@ -32,8 +32,7 @@ bool eveningTaken = false;
 
 // ---------------- NTP Time Setup ----------------
 WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, "pool.ntp.org", 19800, 60000);  // IST +5:30, update every 60 sec
-
+NTPClient timeClient(ntpUDP, "pool.ntp.org", 19800, 60000);  
 void setup() {
   Serial.begin(115200);
 
@@ -62,7 +61,7 @@ void setup() {
   Serial.println("🔗 Connecting to Firebase...");
   config.api_key = API_KEY;
   config.database_url = DATABASE_URL;
-  Firebase.signUp(&config, &auth, "", "");  // anonymous login
+  Firebase.signUp(&config, &auth, "", "");  
   Firebase.begin(&config, &auth);
   Firebase.reconnectWiFi(true);
   Serial.println("✅ Firebase Connected");
@@ -93,20 +92,19 @@ void loop() {
     eveningTaken = true;
   }
 
-  // ---------------- Continuous Buzzer for Pending Meds ----------------
   if ((h == 10 && m == 55 && !morningTaken) || (h == 13 && m == 0 && !afternoonTaken) || (h == 21 && m == 0 && !eveningTaken)) {
-    digitalWrite(BUZZER, HIGH);  // start buzzing
+    digitalWrite(BUZZER, HIGH); 
     Serial.println("💊 Medication time! Press button to stop buzzer.");
   } else {
-    digitalWrite(BUZZER, LOW);  // stop buzzer
+    digitalWrite(BUZZER, LOW); 
   }
 
-  delay(200);  // small delay for button debounce and NTP update
+  delay(200);  
 }
 
 void pillTaken(const char* pillName) {
   Firebase.RTDB.setBool(&fbdo, String("/pillbox/") + pillName, true);
   Firebase.RTDB.setString(&fbdo, "/wearable/alert", String("💊 ") + pillName + " pill taken");
-  digitalWrite(BUZZER, LOW);  // stop buzzer when taken
+  digitalWrite(BUZZER, LOW); 
   Serial.printf("✅ %s pill marked as taken.\n", pillName);
 }
